@@ -10,12 +10,16 @@ def update_board(board):
     updated_board = np.zeros(board.shape)
     for i in range(0, board.shape[0]):
         for j in range(0, board.shape[1]):
-            if neighborhood_density(board, i, j) < 2:
-                updated_board[i][j] = False
-            elif neighborhood_density(board, i, j) > 4:
-                updated_board[i][j] = False
+            if board[i, j]:
+                if neighborhood_density(board, i, j) < 2:
+                    updated_board[i][j] = False
+                elif neighborhood_density(board, i, j) > 3:
+                    updated_board[i][j] = False
+                else:
+                    updated_board[i][j] = True
             else:
-                updated_board[i][j] = True
+                if neighborhood_density(board, i, j) == 3:
+                    updated_board[i][j] = True
     return updated_board
 
 def neighborhood_density(board, row, col):
@@ -23,11 +27,11 @@ def neighborhood_density(board, row, col):
     for i in [row-1, row, row+1]:
         for j in [col-1, col, col+1]:
             if i == row and j == col:
-                continue
-            if i < 0 or i >= board.shape[0] or j < 0 or j >= board.shape[1]:
-                continue
-            if board[i][j]:
-                density += 1
+                None
+            elif i < 0 or i >= board.shape[0] or j < 0 or j >= board.shape[1]:
+                None
+            else:
+                density += board[i][j]
     return density
 
 def draw_board(board, sq_size):
@@ -54,19 +58,19 @@ screen = pygame.display.set_mode([500, 500])
 # Run until the user asks to quit
 
 running = True
-lifex = 5
-lifey = 6
+mat = [[0, 1, 1, 1, 0],
+       [0, 1, 0, 0, 0],
+       [0, 0, 1, 0, 0],
+       [0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0]]
 
 board_dim = 50
 
 board_values = np.zeros((board_dim, board_dim), dtype=bool)
-board_values[lifex][lifex] = True
-board_values[lifex][lifey] = True
-board_values[lifey][lifex] = True
-board_values[lifey + 2][lifex] = True
+for i in range(0, 5):
+    for j in range(0, 5):
+        board_values[i+30][j+30] = mat[i][j]
 screen.fill((0, 0, 0))
-i = 0
-j = 0
 sq_size = 10
 
 while running:
@@ -77,7 +81,7 @@ while running:
 
     draw_board(board_values, sq_size)
     board_values = update_board(board_values)
-    time.sleep(0.05)
+    time.sleep(1)
 
     # Flip the display
 
