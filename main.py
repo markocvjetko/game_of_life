@@ -5,8 +5,34 @@ import time
 
 import numpy as np
 import pygame
-from pygame.rect import Rect
 
+def update_board(board):
+    updated_board = np.zeros(board.shape)
+    row_dim = board.shape[0]
+    col_dim = board.shape[1]
+    for i in range(0, row_dim):
+        for j in range(0, col_dim):
+            if neighborhood_density(board, i, j) < 2:
+                updated_board[i][j] = False
+            elif neighborhood_density(board, i, j) > 4:
+                updated_board[i][j] = False
+            else:
+                updated_board[i][j] = True
+    return updated_board
+
+def neighborhood_density(board, row, col):
+    density = 0
+    for i in [row-1, row, row+1]:
+        for j in [col-1, col, col+1]:
+            if i == row and j == col:
+                continue
+            if i < 0 or j < 0 or i >= board.shape[0] or j >= board.shape[1]:
+                continue
+            if board[i][j]:
+                density += 1
+    return density
+
+from pygame.rect import Rect
 pygame.init()
 
 # Set up the drawing window
@@ -17,6 +43,7 @@ screen = pygame.display.set_mode([500, 500])
 running = True
 lifex = 5
 lifey = 6
+
 while running:
 
     for event in pygame.event.get():
@@ -54,3 +81,4 @@ while running:
 
 # Done! Time to quit.
 pygame.quit()
+
