@@ -8,10 +8,8 @@ import pygame
 
 def update_board(board):
     updated_board = np.zeros(board.shape)
-    row_dim = board.shape[0]
-    col_dim = board.shape[1]
-    for i in range(0, row_dim):
-        for j in range(0, col_dim):
+    for i in range(0, board.shape[0]):
+        for j in range(0, board.shape[1]):
             if neighborhood_density(board, i, j) < 2:
                 updated_board[i][j] = False
             elif neighborhood_density(board, i, j) > 4:
@@ -26,11 +24,26 @@ def neighborhood_density(board, row, col):
         for j in [col-1, col, col+1]:
             if i == row and j == col:
                 continue
-            if i < 0 or j < 0 or i >= board.shape[0] or j >= board.shape[1]:
+            if i < 0 or i >= board.shape[0] or j < 0 or j >= board.shape[1]:
                 continue
             if board[i][j]:
                 density += 1
     return density
+
+def draw_board(board, sq_size):
+    for i in range(0, board.shape[0]):
+        for j in range(0, board.shape[1]):
+            color = [225, 225, 225]
+            print(color)
+            status = not board_values[i][j]
+            print(type(color))
+            color = [x * status for x in color]
+            print(type(color))
+            print(color)
+            pygame.draw.rect(screen, color, (i*sq_size, j*sq_size, sq_size, sq_size))
+            j += 1
+        i += 1
+    pygame.display.flip()
 
 from pygame.rect import Rect
 pygame.init()
@@ -44,39 +57,28 @@ running = True
 lifex = 5
 lifey = 6
 
+board_dim = 50
+
+board_values = np.zeros((board_dim, board_dim), dtype=bool)
+board_values[lifex][lifex] = True
+board_values[lifex][lifey] = True
+board_values[lifey][lifex] = True
+board_values[lifey + 2][lifex] = True
+screen.fill((0, 0, 0))
+i = 0
+j = 0
+sq_size = 10
+
 while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+    draw_board(board_values, sq_size)
+    board_values = update_board(board_values)
+    time.sleep(0.05)
 
-    board_dim = 50
-
-    board_values = np.zeros((board_dim, board_dim), dtype=bool)
-    board_values[lifex][lifex] = True
-    board_values[lifex][lifey] = True
-    board_values[lifey][lifex] = True
-    print(board_values)
-    screen.fill((0, 0, 0))
-    i = 0
-    j = 0
-    sq_size = 10
-    while i < board_dim:
-        j = 0
-        while j < board_dim:
-            status = not board_values[i][j]
-            pygame.draw.rect(screen, (225*status, 225*status, 225*status), (i*sq_size, j*sq_size, sq_size, sq_size))
-            j += 1
-        i += 1
-    pygame.display.flip()
-    time.sleep(1)
-    board_values[lifex][lifex] = False
-    board_values[lifex][lifey] = False
-    board_values[lifey][lifex] = False
-
-    lifex = (lifex+1)%board_dim
-    lifey = (lifey+1)%board_dim
     # Flip the display
 
 # Done! Time to quit.
