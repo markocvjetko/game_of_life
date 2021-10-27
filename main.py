@@ -27,9 +27,9 @@ def neighborhood_density(board, row, col):
     for i in [row-1, row, row+1]:
         for j in [col-1, col, col+1]:
             if i == row and j == col:
-                None
+                continue
             elif i < 0 or i >= board.shape[0] or j < 0 or j >= board.shape[1]:
-                None
+                continue
             else:
                 density += board[i][j]
     return density
